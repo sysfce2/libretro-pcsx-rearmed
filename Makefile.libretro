@@ -66,6 +66,10 @@ else ifeq ($(platform), vita)
   LD = arm-vita-eabi-ld$(EXE_EXT)
   OBJCOPY = arm-vita-eabi-objcopy$(EXE_EXT)
 else ifeq ($(platform), ctr)
+  ifneq ($(strip $(DEVKITPRO)),)
+  DEVKITARM ?= $(DEVKITPRO)/devkitARM
+  CTRULIB ?= $(DEVKITPRO)/libctru
+  endif
   ifeq ($(strip $(DEVKITARM)),)
   $(error "DEVKITARM env var is not set")
   endif
@@ -351,17 +355,19 @@ else ifeq ($(platform), ctr)
 	endif
 	TARGET := $(TARGET_NAME)_libretro_ctr.a
 	CFLAGS += -DARM11 -D_3DS -D__3DS__
-	CFLAGS += -DNO_DYLIB -DGPU_UNAI_USE_FLOATMATH -DGPU_UNAI_USE_FLOAT_DIV_MULTINV
+	CFLAGS += -DGPU_UNAI_USE_FLOATMATH -DGPU_UNAI_USE_FLOAT_DIV_MULTINV
 	CFLAGS += -march=armv6k -mtune=mpcore -mfloat-abi=hard -marm -mfpu=vfp -mtp=soft
-	CFLAGS += -Wall -mword-relocations
+	CFLAGS += -mword-relocations
 	CFLAGS += -fomit-frame-pointer
 	CFLAGS_LAST += -O3
 	# CFLAGS += -funroll-loops # ~500K of bloat
 	CFLAGS += -Ifrontend/3ds -I$(CTRULIB)/include
 	CFLAGS += -Werror=implicit-function-declaration
+	CFLAGS += -Wno-format
 	CFLAGS += -DHAVE_UNISTD_H
 	CFLAGS += -DZ7_DECL_Int32_AS_long
 	CFLAGS += -DUSE_CTRULIB_2
+	CFLAGS += -DNO_DYLIB
 
 	OBJS += deps/arm-mem/memcpymove-v6l.o
 	OBJS += deps/arm-mem/memset-v6l.o
@@ -398,6 +404,7 @@ else ifneq (,$(filter $(platform),ngc wii wiiu))
 		CFLAGS += -DHW_WUP
 		CFLAGS += -I frontend/wiiu
 		CFLAGS += -DZ7_DECL_Int32_AS_long
+		CFLAGS += -Wno-format
 		LIGHTREC_CUSTOM_MAP := 1
 		LIGHTREC_CUSTOM_MAP_OBJ := libpcsxcore/lightrec/mem_wiiu.o
 		LIGHTREC_CODE_INV := 1
