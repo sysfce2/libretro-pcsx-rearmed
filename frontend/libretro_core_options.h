@@ -239,6 +239,7 @@ struct retro_core_option_v2_definition option_defs_us[] = {
       NULL,
       "system",
       {
+         { "auto", "Auto" },
          { "30",  NULL },
          { "31",  NULL },
          { "32",  NULL },
@@ -312,22 +313,19 @@ struct retro_core_option_v2_definition option_defs_us[] = {
          { "100", NULL },
          { NULL, NULL },
       },
-#if defined(HAVE_PRE_ARMV7) && !defined(_3DS)
-      "50",
-#else
-      "57",
-#endif
+      "auto",
    },
    {
       "pcsx_rearmed_dithering",
       "Dithering Pattern",
       NULL,
-      "Enable emulation of the dithering technique used by the PSX to smooth out color banding artifacts. Increases performance requirements.",
+      "Enable emulation of the dithering technique used by the PSX to smooth out color banding artifacts. \"Force\" enables it even if the game turns it off. Increases performance requirements.",
       NULL,
       "video",
       {
          { "disabled", NULL },
          { "enabled",  NULL },
+         { "force",    "Force" },
          { NULL, NULL },
       },
 #if defined(_3DS)
