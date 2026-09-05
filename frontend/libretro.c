@@ -1515,13 +1515,13 @@ static unsigned int disk_get_image_index(void)
 
 static bool disk_set_image_index(unsigned int index)
 {
-   if (index >= sizeof(disks) / sizeof(disks[0]))
+   if (index > disk_count)
       return false;
 
    CdromId[0] = '\0';
    CdromLabel[0] = '\0';
 
-   if (disks[index].fname == NULL)
+   if (index == disk_count || disks[index].fname == NULL)
    {
       LogErr("missing disk #%u\n", index);
       cdra_shutdown();
@@ -1720,7 +1720,11 @@ static bool read_m3u(const char *file)
          char disk_label[PATH_MAX];
          disk_label[0] = '\0';
 
-         snprintf(name, sizeof(name), "%s%c%s", base_dir, SLASH, line);
+         if (line[0] == '/' || line[0] == '\\' ||
+             (line[1] == ':' && (line[2] == '/' || line[2] == '\\')))
+            snprintf(name, sizeof(name), "%s", line);
+         else
+            snprintf(name, sizeof(name), "%s%c%s", base_dir, SLASH, line);
          disks[disk_count].fname = strdup(name);
 
          get_disk_label(disk_label, name, PATH_MAX);
